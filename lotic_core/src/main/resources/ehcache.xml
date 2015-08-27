@@ -1,0 +1,49 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../config/ehcache.xsd">
+	
+		<diskStore path="java.io.tmpdir" />
+<!--  
+<cacheManagerPeerProviderFactory
+	class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+	properties="peerDiscovery=manual,
+rmiUrls=//localhost:40002/share" />
+	-->
+	 
+ <cacheManagerPeerProviderFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory" 
+		properties="peerDiscovery=automatic, multicastGroupAddress=230.0.0.1, multicastGroupPort=4446, 
+		timeToLive=32" />
+		 
+ <cacheManagerPeerListenerFactory  
+        class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"  
+        properties="hostName=localhost, port=40001,socketTimeoutMillis=12000" />
+
+	<defaultCache maxElementsInMemory="10000" eternal="false"
+		timeToIdleSeconds="120" timeToLiveSeconds="120" maxElementsOnDisk="10000000"
+		diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU">
+
+		<persistence strategy="localTempSwap" />
+	</defaultCache>
+
+	<cache name="share" maxElementsInMemory="10000" eternal="true"
+		timeToIdleSeconds="120" timeToLiveSeconds="120" maxElementsOnDisk="10000000"
+		diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU"
+		overflowToDisk="true">
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+  	
+	</cache>
+	<!-- shiro cache -->
+	<cache name="shiro-activeSessionCache" maxElementsInMemory="10000"
+		overflowToDisk="true" eternal="true" timeToLiveSeconds="0"
+		timeToIdleSeconds="0" diskPersistent="true"
+		diskExpiryThreadIntervalSeconds="600">
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+
+	</cache>
+
+	<cache name="org.apache.shiro.realm.text.PropertiesRealm-0-accounts"
+		maxElementsInMemory="1000" eternal="true" overflowToDisk="true" />
+	<!-- shiro cache end -->
+
+</ehcache>
